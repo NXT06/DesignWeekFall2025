@@ -2,11 +2,17 @@ using UnityEngine;
 
 public class Background : MonoBehaviour
 {
-    public Renderer background; 
+    float offset;
+    Material mat;
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        background.material.mainTextureOffset = new Vector2(Time.time * PlayerInputs.currentSpeed, 0f); 
+        mat = GetComponent<Renderer>().material;
+    }
+
+    private void Update()
+    {
+        offset += (Time.deltaTime * PlayerInputs.currentSpeed) / 10f;
+        mat.SetTextureOffset("_MainTex", new Vector2(offset, 0)); 
     }
 }
