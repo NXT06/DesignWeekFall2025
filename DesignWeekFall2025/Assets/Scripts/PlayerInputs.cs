@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI; 
@@ -10,18 +11,31 @@ public class PlayerInputs : MonoBehaviour
         pumpUp, pumpDown,
         damaged
     }
+    public enum RailStates
+    {
+        bottom,
+        top
+    }
     public TextMeshProUGUI player1Input, player2Input, p1StateText, p2StateText;
     public Slider speedSlider;
     public TextMeshProUGUI speedometer; 
 
     public PumpStates player1state;
     public PumpStates player2state;
+    public RailStates currentRail; 
+
+    public Transform bottomRail, topRail; 
+
+    public bool isJumping; 
+    public bool canJump; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         player1state = PumpStates.idle;
         player2state = PumpStates.idle;
+        currentRail = RailStates.bottom;
+        canJump = true; 
         speedSlider.maxValue = maxSpeed;
 
     }
@@ -29,7 +43,7 @@ public class PlayerInputs : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleSpeed(); 
+        HandleSpeed();
         GetInputs();
 
     }
@@ -37,6 +51,7 @@ public class PlayerInputs : MonoBehaviour
     {
 
     }
+
     public static float currentSpeed;
     float targetSpeed;
     public float decelerationRate;
@@ -56,8 +71,6 @@ public class PlayerInputs : MonoBehaviour
             currentSpeed = 0.0f;
         }
 
-            print(currentSpeed);
-
         float fontSize = Mathf.Clamp(currentSpeed + 20, 20, 40);
 
 
@@ -66,7 +79,6 @@ public class PlayerInputs : MonoBehaviour
         speedSlider.value = currentSpeed;
 
     }
-
     public void GetInputs()
     {
         Vector2 currentInput;
@@ -82,6 +94,14 @@ public class PlayerInputs : MonoBehaviour
         HandleMove(currentInput);
         //print(currentInput);
 
+        if (Input.GetKeyDown(KeyCode.Space)) 
+        {
+            print("jump"); 
+            if (canJump)
+            {
+                HandleJump(); 
+            }
+        }
     }
 
     public float heightThreshold;
@@ -154,5 +174,51 @@ public class PlayerInputs : MonoBehaviour
 
 
 
+    }
+
+    public void HandleJump()
+    {
+        print("check"); 
+        switch (currentRail)
+        {
+            case RailStates.top:
+
+                StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position, Time.time)); 
+                isJumping = true;
+                currentRail = RailStates.bottom;
+                break;
+
+            case RailStates.bottom:
+
+                StartCoroutine(Jump(topRail.transform.position, bottomRail.transform.position, Time.time));
+                isJumping = true;
+                currentRail = RailStates.top; 
+                break;   
+
+        }
+    }
+
+    public float jumpHeight;
+    public float jumpTime;
+    float t; 
+    public IEnumerator Jump(Vector3 endPos, Vector3 startPos, float startTime)
+    {
+        print("startjump"); 
+        t = 0f; 
+
+        while (t < 1f)
+        {
+            t = (Time.time - startTime) / jumpTime;
+
+            Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
+
+            transform.position = newPos;
+
+            yield return null;  
+        }
+
+        transform.position = endPos;
+        isJumping = false;  
+       
     }
 }
