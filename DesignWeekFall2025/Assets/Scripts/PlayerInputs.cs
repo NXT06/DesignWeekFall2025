@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI; 
+
 public class PlayerInputs : MonoBehaviour
 {
 
@@ -107,10 +108,14 @@ public class PlayerInputs : MonoBehaviour
     public float heightThreshold;
     public float pumpSpeed; 
     public bool p1CanPump; 
-    public bool p2CanPump; 
+    public bool p2CanPump;
+    public DetectRail rail; 
     public void HandleMove(Vector2 input)
     {
-        
+        if (!rail.CheckRail())
+        {
+            return; 
+        }
         
         switch (player1state)
         {
@@ -178,47 +183,80 @@ public class PlayerInputs : MonoBehaviour
 
     public void HandleJump()
     {
+        isJumping = true;
+        canJump = false; 
         print("check"); 
         switch (currentRail)
         {
             case RailStates.top:
 
-                StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position, Time.time)); 
-                isJumping = true;
+                StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position)); 
                 currentRail = RailStates.bottom;
                 break;
 
             case RailStates.bottom:
 
-                StartCoroutine(Jump(topRail.transform.position, bottomRail.transform.position, Time.time));
-                isJumping = true;
+                StartCoroutine(Jump(topRail.transform.position, bottomRail.transform.position));
                 currentRail = RailStates.top; 
                 break;   
 
         }
     }
 
+    Vector3[] jumpPoints = new Vector3[3];
     public float jumpHeight;
     public float jumpTime;
     float t; 
-    public IEnumerator Jump(Vector3 endPos, Vector3 startPos, float startTime)
+    public IEnumerator Jump(Vector3 endPos, Vector3 startPos)
     {
         print("startjump"); 
-        t = 0f; 
+        t = 0f;
+
+        jumpPoints[0] = startPos;
+        jumpPoints[2] = endPos;
+        jumpPoints[1] = jumpPoints[0] + (jumpPoints[2] - jumpPoints[0]) /2 + Vector3.up * 5; 
 
         while (t < 1f)
         {
-            t = (Time.time - startTime) / jumpTime;
+            t += 1 * Time.deltaTime;
 
-            Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
+            Vector3 m1 = Vector3.Lerp(jumpPoints[0], jumpPoints[1], t);
+            Vector3 m2 = Vector3.Lerp(jumpPoints[1], jumpPoints[2], t);
 
-            transform.position = newPos;
+            Vector3 newPos = Vector3.Lerp(m1, m2, t);
+
+            transform.position = newPos; 
 
             yield return null;  
         }
 
         transform.position = endPos;
+        canJump = true; 
         isJumping = false;  
        
+    }
+
+    public void HandleShake()
+    {
+        StartCoroutine(Shake());
+    }
+    float g;
+    public float shakeTime;
+    public float shakeMag; 
+    IEnumerator Shake()
+    {
+        while (g < shakeTime)
+        {
+            g += Time.deltaTime;
+
+            Vector2 newPos = Random.insideUnitCircle * (Time.deltaTime * shakeMag);
+
+            newPos.y = transform.position.y;
+            newPos.x = transform.position.x;
+
+            yield return null;
+        }
+        
+
     }
 }
