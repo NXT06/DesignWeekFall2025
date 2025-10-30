@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Bomb
   - Rock
+  - BombSpawner
+  - Minecart
   layers:
   - Default
   - TransparentFX

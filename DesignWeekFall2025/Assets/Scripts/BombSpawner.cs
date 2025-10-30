@@ -6,20 +6,28 @@ using TMPro;
 public class BombSpawner : MonoBehaviour
 {
     public GameObject bomb;
+
     public float cooldownTimer;
     public float cooldownMaxTime = 0.5f;
+    public float maxBombCount = 5;
+    public float amountOfBombs;
+
     public TextMeshProUGUI cooldownTimerText;
+    public TextMeshProUGUI bombCountText;
 
     private bool isBombSpawned = false;
 
     void Start()
     {
         cooldownTimer = 0f;
+
+        amountOfBombs = maxBombCount;
     }
 
     void Update()
     {
         cooldownTimerText.text = cooldownTimer.ToString("F2");
+        bombCountText.text = amountOfBombs.ToString();
 
         cooldownTimer -= Time.deltaTime;
         
@@ -28,7 +36,7 @@ public class BombSpawner : MonoBehaviour
             cooldownTimer = 0;
         }
 
-        if (Input.GetMouseButtonDown(0) & cooldownTimer <= 0f)
+        if (Input.GetMouseButtonDown(0) & cooldownTimer <= 0f & amountOfBombs > 0f)
         {
             isBombSpawned = true;
         }
@@ -36,6 +44,7 @@ public class BombSpawner : MonoBehaviour
         if (isBombSpawned)
         {
             SpawnBomb();
+            Bombcount();
             cooldownTimer = cooldownMaxTime;
             isBombSpawned = false;
         }
@@ -44,5 +53,10 @@ public class BombSpawner : MonoBehaviour
     private void SpawnBomb()
     {
         Instantiate(bomb, transform.position, Quaternion.identity);
+    }
+
+    public void Bombcount()
+    {
+        amountOfBombs -= 1;
     }
 }
