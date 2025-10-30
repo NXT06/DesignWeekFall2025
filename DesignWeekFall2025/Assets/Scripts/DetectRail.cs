@@ -7,7 +7,7 @@ public class DetectRail : MonoBehaviour
     public LayerMask railLayer; 
     public bool CheckRail()
     {
-        if(Physics2D.OverlapBox(transform.position + Vector3.right * PlayerInputs.currentSpeed, size, 0, railLayer))
+        if(Physics2D.OverlapBox(transform.position, size, 0, railLayer))
         {
             return true; 
         }
@@ -20,6 +20,6 @@ public class DetectRail : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(transform.position + Vector3.right * PlayerInputs.currentSpeed, size);
+        Gizmos.DrawWireCube(transform.position, size);
     }
 }

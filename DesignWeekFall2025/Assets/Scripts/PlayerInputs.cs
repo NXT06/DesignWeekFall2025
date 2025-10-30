@@ -1,6 +1,5 @@
 using NUnit.Framework.Constraints;
 using System.Collections;
-using System.Drawing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI; 
@@ -30,7 +29,8 @@ public class PlayerInputs : MonoBehaviour
     public Transform bottomRail, topRail; 
 
     public bool isJumping; 
-    public bool canJump; 
+    public bool canJump;
+    public bool isFalling; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -105,6 +105,11 @@ public class PlayerInputs : MonoBehaviour
             {
                 HandleJump(); 
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            ResetPlayer();
         }
     }
 
@@ -208,12 +213,16 @@ public class PlayerInputs : MonoBehaviour
         }
     }
 
+    public float fallSpeed;
+    public float offScreen; 
     public void HandleFall()
     {
-        if (!rail.CheckRail() && currentRail == RailStates.top)
+        if (isFalling) { return; }
+
+        if (!rail.CheckRail() && !isJumping)
         {
-            StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position, 1, 3)); 
-            currentRail = RailStates.bottom;
+            StartCoroutine(Fall(transform.position, offScreen, fallSpeed));
+            isFalling = true;
         }
     }
 
@@ -262,6 +271,31 @@ public class PlayerInputs : MonoBehaviour
        
     }
 
+    public IEnumerator Fall(Vector3 startPos, float fallPoint, float fallSpeed)
+    {
+
+        float f = 0f; 
+        Vector3 currentPos = transform.position;
+
+        while (f < 1)
+        {
+            f += Time.deltaTime * fallSpeed; 
+
+            Vector3 newPos = Vector3.Lerp(startPos, startPos + new Vector3(0, fallPoint, 0), f);
+
+            transform.position = newPos;
+
+            yield return null; 
+            
+        }
+        isFalling = false; 
+        
+        ResetPlayer();
+       
+
+
+    }
+
     public void HandleShake()
     {
         StartCoroutine(Shake());
@@ -286,5 +320,91 @@ public class PlayerInputs : MonoBehaviour
 
     }
 
-    
+    public SpriteRenderer bodySprite; 
+    IEnumerator FlashRenderer()
+    {
+
+        bodySprite.color = Color.clear;
+
+        yield return new WaitForSeconds(0.2f);
+
+        bodySprite.color = Color.white;
+
+        yield return new WaitForSeconds(0.2f);
+
+        bodySprite.color = Color.clear;
+
+        yield return new WaitForSeconds(0.2f);
+
+        bodySprite.color = Color.white;
+
+        yield return new WaitForSeconds(0.2f);
+
+        bodySprite.color = Color.clear;
+
+        yield return new WaitForSeconds(0.2f);
+
+        bodySprite.color = Color.white;
+
+        
+
+    }
+
+    public void ResetPlayer()
+    {
+
+        currentSpeed = currentSpeed / 4f;
+        targetSpeed = currentSpeed / 4f; 
+
+
+        switch (currentRail)
+        {
+            case RailStates.top:
+
+                transform.position = bottomRail.position;
+                currentRail = RailStates.bottom;
+                transform.localScale = Vector3.one;
+                break; 
+
+            case RailStates.bottom:
+
+                transform.position = topRail.position;
+                currentRail = RailStates.top;
+                transform.localScale = Vector3.one - Vector3.one * scaleChange;
+                break; 
+
+
+        }
+    }
+
+    public void TakeDamage()
+    {
+
+    }
+
+    public LayerMask rockLayer; 
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+
+        print(collision.gameObject.layer);
+        if (collision.gameObject.layer == 6) 
+        {
+            print("collide");
+            currentSpeed = currentSpeed / 4f;
+            targetSpeed = currentSpeed / 4f;
+
+            Destroy(collision.gameObject);
+
+            StartCoroutine(FlashRenderer()); 
+
+
+
+        }
+
+
+    }
+
+
+
 }
