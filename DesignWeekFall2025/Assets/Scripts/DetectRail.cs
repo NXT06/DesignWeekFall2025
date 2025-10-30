@@ -2,18 +2,24 @@ using UnityEngine;
 
 public class DetectRail : MonoBehaviour
 {
-    Transform railPosition;
-    Vector2 size;
-    LayerMask railLayer; 
+  
+    public Vector2 size;
+    public LayerMask railLayer; 
     public bool CheckRail()
     {
-        if(Physics2D.OverlapBox(railPosition.position, size, 0, railLayer))
+        if(Physics2D.OverlapBox(transform.position + Vector3.right * PlayerInputs.currentSpeed, size, 0, railLayer))
         {
             return true; 
         }
         else
         {
+            print("no Rail");
             return false;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position + Vector3.right * PlayerInputs.currentSpeed, size);
     }
 }

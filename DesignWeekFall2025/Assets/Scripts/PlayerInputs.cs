@@ -1,4 +1,6 @@
+using NUnit.Framework.Constraints;
 using System.Collections;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI; 
@@ -45,6 +47,7 @@ public class PlayerInputs : MonoBehaviour
     void Update()
     {
         HandleSpeed();
+        HandleFall();
         GetInputs();
 
     }
@@ -112,10 +115,7 @@ public class PlayerInputs : MonoBehaviour
     public DetectRail rail; 
     public void HandleMove(Vector2 input)
     {
-        if (!rail.CheckRail())
-        {
-            return; 
-        }
+        
         
         switch (player1state)
         {
@@ -183,6 +183,11 @@ public class PlayerInputs : MonoBehaviour
 
     public void HandleJump()
     {
+        if (!rail.CheckRail())
+        {
+            return;
+        }
+
         isJumping = true;
         canJump = false; 
         print("check"); 
@@ -190,35 +195,56 @@ public class PlayerInputs : MonoBehaviour
         {
             case RailStates.top:
 
-                StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position)); 
+                StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position, 5, 1)); 
                 currentRail = RailStates.bottom;
                 break;
 
             case RailStates.bottom:
 
-                StartCoroutine(Jump(topRail.transform.position, bottomRail.transform.position));
+                StartCoroutine(Jump(topRail.transform.position, bottomRail.transform.position, 5, 1));
                 currentRail = RailStates.top; 
                 break;   
 
         }
     }
 
+    public void HandleFall()
+    {
+        if (!rail.CheckRail() && currentRail == RailStates.top)
+        {
+            StartCoroutine(Jump(bottomRail.transform.position, topRail.transform.position, 1, 3)); 
+            currentRail = RailStates.bottom;
+        }
+    }
+
     Vector3[] jumpPoints = new Vector3[3];
-    public float jumpHeight;
-    public float jumpTime;
+    public float scaleChange; 
     float t; 
-    public IEnumerator Jump(Vector3 endPos, Vector3 startPos)
+    public IEnumerator Jump(Vector3 endPos, Vector3 startPos, float jumpHeight, float jumpSpeedMultiplier)
     {
         print("startjump"); 
         t = 0f;
+        Vector3 currentScale = transform.localScale;
+        float scale; 
 
-        jumpPoints[0] = startPos;
+        if(currentRail == RailStates.top)
+        {
+            scale = 1f;
+        }
+        else
+        {
+            scale = -1f; 
+        }
+
+            jumpPoints[0] = startPos;
         jumpPoints[2] = endPos;
-        jumpPoints[1] = jumpPoints[0] + (jumpPoints[2] - jumpPoints[0]) /2 + Vector3.up * 5; 
+        jumpPoints[1] = jumpPoints[0] + (jumpPoints[2] - jumpPoints[0]) /2 + Vector3.up * jumpHeight; 
 
         while (t < 1f)
         {
-            t += 1 * Time.deltaTime;
+            t += 1 * Time.deltaTime * jumpSpeedMultiplier;
+
+            transform.localScale = Vector3.Lerp(currentScale, currentScale + (Vector3.one * scaleChange * scale), t);
 
             Vector3 m1 = Vector3.Lerp(jumpPoints[0], jumpPoints[1], t);
             Vector3 m2 = Vector3.Lerp(jumpPoints[1], jumpPoints[2], t);
@@ -259,4 +285,6 @@ public class PlayerInputs : MonoBehaviour
         
 
     }
+
+    
 }
