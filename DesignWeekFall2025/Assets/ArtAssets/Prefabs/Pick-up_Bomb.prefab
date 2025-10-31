@@ -9,13 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9052427014123488681}
-  - component: {fileID: 812882383192307175}
+  - component: {fileID: 4692826413828457729}
   - component: {fileID: 500611675182800016}
   - component: {fileID: 1748960514986953302}
   - component: {fileID: 7064898870289623520}
   m_Layer: 5
-  m_Name: Bomb
-  m_TagString: Bomb
+  m_Name: Pick-up_Bomb
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -35,7 +35,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &812882383192307175
+--- !u!114 &4692826413828457729
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,12 +44,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 395107260563976088}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b07ce9ce2934d4442bf7c182362276ed, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c09e5504810b74488f0b4dda3286102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchSpeed: 3.5
-  explosion: {fileID: 2720081977569665378, guid: 5a28d1a3f2e3b10459fd8604762da448, type: 3}
-  bomb: {fileID: 395107260563976088}
+  spawner: {fileID: 0}
 --- !u!212 &500611675182800016
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -120,7 +118,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
