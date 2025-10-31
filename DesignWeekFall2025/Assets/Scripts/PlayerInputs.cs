@@ -88,8 +88,8 @@ public class PlayerInputs : MonoBehaviour
 
         float fontSize = Mathf.Clamp(currentSpeed + 20, 20, 40);
 
-
-        speedometer.text = $"" + Mathf.RoundToInt(currentSpeed);
+        float fakeSpeed = currentSpeed * 5; 
+        speedometer.text = $"" + Mathf.RoundToInt(fakeSpeed);
         speedometer.fontSize = fontSize;
         speedSlider.value = distToEnd - Vector3.Distance(transform.position, endPoint.transform.position); 
 
