@@ -15,12 +15,11 @@ public class Bomb : MonoBehaviour
         var direction = transform.right + Vector3.up;
         GetComponent<Rigidbody2D>().AddForce(direction * launchSpeed, ForceMode2D.Impulse);
 
-        spawner = GameObject.FindGameObjectWithTag("BombSpawner").GetComponent<BombSpawner>();
     }
 
     void Update()
     {
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 5);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -29,7 +28,7 @@ public class Bomb : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Rock"))
         {
-            spawner.amountOfBombs += 1;
+            Instantiate(bomb, collision.transform); 
             Destroy(collision.gameObject);
             Debug.Log("Rock");
         }

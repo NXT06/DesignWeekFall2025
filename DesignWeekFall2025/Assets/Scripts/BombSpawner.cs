@@ -12,29 +12,25 @@ public class BombSpawner : MonoBehaviour
     public float maxBombCount = 5;
     public float amountOfBombs;
 
-    public TextMeshProUGUI cooldownTimerText;
+    //public TextMeshProUGUI cooldownTimerText;
     public TextMeshProUGUI bombCountText;
 
     private bool isBombSpawned = false;
 
     void Start()
     {
-        cooldownTimer = 0f;
+        cooldownTimer = 0.5f;
 
         amountOfBombs = maxBombCount;
     }
 
     void Update()
     {
-        cooldownTimerText.text = cooldownTimer.ToString("F2");
+        //cooldownTimerText.text = cooldownTimer.ToString("F2");
         bombCountText.text = amountOfBombs.ToString();
 
         cooldownTimer -= Time.deltaTime;
         
-        if (cooldownTimer <= 0f)
-        {
-            cooldownTimer = 0;
-        }
 
         if (Input.GetMouseButtonDown(0) & cooldownTimer <= 0f & amountOfBombs > 0f)
         {

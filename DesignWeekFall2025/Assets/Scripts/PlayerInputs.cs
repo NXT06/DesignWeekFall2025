@@ -2,6 +2,7 @@ using NUnit.Framework.Constraints;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI; 
 
 public class PlayerInputs : MonoBehaviour
@@ -18,15 +19,18 @@ public class PlayerInputs : MonoBehaviour
         bottom,
         top
     }
-    public TextMeshProUGUI player1Input, player2Input, p1StateText, p2StateText;
+    public TextMeshProUGUI p1StateText, p2StateText;
     public Slider speedSlider;
-    public TextMeshProUGUI speedometer; 
+    public TextMeshProUGUI speedometer;
+
+    float distToEnd; 
 
     public PumpStates player1state;
     public PumpStates player2state;
     public RailStates currentRail; 
 
-    public Transform bottomRail, topRail; 
+    public Transform bottomRail, topRail;
+    public Transform endPoint; 
 
     public bool isJumping; 
     public bool canJump;
@@ -38,8 +42,10 @@ public class PlayerInputs : MonoBehaviour
         player1state = PumpStates.idle;
         player2state = PumpStates.idle;
         currentRail = RailStates.bottom;
-        canJump = true; 
-        speedSlider.maxValue = maxSpeed;
+        canJump = true;
+        distToEnd = Vector3.Distance(transform.position, endPoint.position);
+        speedSlider.maxValue = distToEnd;
+        
 
     }
 
@@ -50,6 +56,11 @@ public class PlayerInputs : MonoBehaviour
         HandleFall();
         GetInputs();
 
+
+        if (Vector3.Distance(transform.position, endPoint.transform.position) < 2)
+        {
+            SceneManager.LoadScene("Win");
+        }
     }
     public void HandleState()
     {
@@ -78,9 +89,9 @@ public class PlayerInputs : MonoBehaviour
         float fontSize = Mathf.Clamp(currentSpeed + 20, 20, 40);
 
 
-        speedometer.text = $"" + Mathf.RoundToInt(currentSpeed) + " km/h";
+        speedometer.text = $"" + Mathf.RoundToInt(currentSpeed);
         speedometer.fontSize = fontSize;
-        speedSlider.value = currentSpeed;
+        speedSlider.value = distToEnd - Vector3.Distance(transform.position, endPoint.transform.position); 
 
     }
     public void GetInputs()
@@ -90,8 +101,6 @@ public class PlayerInputs : MonoBehaviour
         currentInput.x = Input.GetAxisRaw("Horizontal");
         currentInput.y = Input.GetAxisRaw("Vertical");
 
-        player1Input.text = Mathf.RoundToInt(currentInput.x).ToString();
-        player2Input.text = Mathf.RoundToInt(currentInput.y).ToString();
         p1StateText.text = player1state.ToString();
         p2StateText.text = player2state.ToString();
 
@@ -188,9 +197,19 @@ public class PlayerInputs : MonoBehaviour
 
     public void HandleJump()
     {
-        if (!rail.CheckRail())
+        if(currentRail == RailStates.top)
         {
-            return;
+            if (!rail.CheckBottom())
+            {
+                return; 
+            }
+        }
+        if(currentRail == RailStates.bottom)
+        {
+            if (!rail.CheckTop())
+            {
+                return; 
+            }
         }
 
         isJumping = true;
@@ -355,7 +374,7 @@ public class PlayerInputs : MonoBehaviour
 
         currentSpeed = currentSpeed / 4f;
         targetSpeed = currentSpeed / 4f; 
-
+        StartCoroutine(FlashRenderer());
 
         switch (currentRail)
         {

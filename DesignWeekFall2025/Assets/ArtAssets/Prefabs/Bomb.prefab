@@ -50,6 +50,7 @@ MonoBehaviour:
   launchSpeed: 3.5
   explosion: {fileID: 2720081977569665378, guid: 5a28d1a3f2e3b10459fd8604762da448, type: 3}
   bomb: {fileID: 395107260563976088}
+  spawner: {fileID: 0}
 --- !u!212 &500611675182800016
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -93,7 +94,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 9b384e873b882d54a92fcf40e2185dfa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
