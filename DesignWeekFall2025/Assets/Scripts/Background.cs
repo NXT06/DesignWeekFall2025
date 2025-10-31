@@ -3,6 +3,7 @@ using UnityEngine;
 public class Background : MonoBehaviour
 {
     float offset;
+    public float speedCut; 
     Material mat;
 
     private void Start()
@@ -12,7 +13,7 @@ public class Background : MonoBehaviour
 
     private void Update()
     {
-        offset += (Time.deltaTime * PlayerInputs.currentSpeed) / 10f;
+        offset += (Time.deltaTime * PlayerInputs.currentSpeed) / speedCut;
         mat.SetTextureOffset("_MainTex", new Vector2(offset, 0)); 
     }
 }
